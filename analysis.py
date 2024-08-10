@@ -5,7 +5,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
-
+#The modeling and data visualization below is purely for academic purposes.
 
 #Reading the Json files into different DataFrames
 business = pd.read_json('yelp_business.json', lines=True)
