@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
-#The modeling and data visualization below is purely for academic purposes.
+
 
 #Reading the Json files into different DataFrames
 business = pd.read_json('yelp_business.json', lines=True)
@@ -66,7 +67,7 @@ for i in range(len(corr_matrix2.columns)):
 
 
 #Creating our feature list(X) and target variable list(y)
-X = df[['average_review_sentiment','average_review_length','average_review_age','price_range','average_review_count','average_number_years_elite','has_bike_parking']]
+X = df.drop(columns=['stars'])
 y = df['stars']
 
 
@@ -79,12 +80,44 @@ lr = LinearRegression()
 lr.fit(X_train, y_train)
 
 
+
+
 #Printing out the correlation of our linear model with respect to our training data.
 print(lr.score(X_train, y_train))
 #Printing out the correlation of our linear model with respect to our testing data.
 print(lr.score(X_test, y_test))
 #Printing out the coefficients of our linear model.
 print(lr.coef_)
+
+#Printing out the mean squared error of the model on the testing data.
+print(mean_squared_error(y_test, lr.predict(X_test)))
+
+
+
+
+# Using only selected features for training and testing inputs
+X_train_reduced = pd.DataFrame(X_train)[['average_review_length', 'average_review_sentiment', 'average_review_age']]
+X_test_reduced = pd.DataFrame(X_test)[['average_review_length', 'average_review_sentiment', 'average_review_age']]
+
+#Instantiating a new Linear Regression Object
+lr2 = LinearRegression()
+
+#Fitting our new Linear Regression model to the training data, creating a Linear Regression model for the reduced input
+lr2.fit(X_train_reduced, y_train)
+
+
+#Printing the score of the reduced model on the training data
+print((lr2.score(X_train_reduced, y_train)))
+
+#Printing the score of the reduced model on the testing data
+print((lr2.score(X_test_reduced, y_test)))
+
+#Printing the coefficients of the reduced model
+print(lr2.coef_)
+
+#Printing the mean squared error of the reduced model on the test data.
+print(mean_squared_error(y_test, lr2.predict(X_test_reduced)))
+
 
 plt.scatter(pd.DataFrame(X_test)['average_review_sentiment'], y_test)
 plt.title("Ratings vs. Average Review Sentiment (Testing Data)")
